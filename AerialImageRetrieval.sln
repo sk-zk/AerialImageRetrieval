@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialImageRetrieval", "AerialImageRetrieval\AerialImageRetrieval.csproj", "{1B4150B1-4752-4782-88AC-C6C5C39F1F6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dbg", "Dbg\Dbg.csproj", "{ACEA6666-0E22-4A21-9ED0-67804B6A4B22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B4150B1-4752-4782-88AC-C6C5C39F1F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B4150B1-4752-4782-88AC-C6C5C39F1F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B4150B1-4752-4782-88AC-C6C5C39F1F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B4150B1-4752-4782-88AC-C6C5C39F1F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACEA6666-0E22-4A21-9ED0-67804B6A4B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACEA6666-0E22-4A21-9ED0-67804B6A4B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACEA6666-0E22-4A21-9ED0-67804B6A4B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACEA6666-0E22-4A21-9ED0-67804B6A4B22}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABEF572A-1BCD-4FBB-BBFE-720A91631252}
+	EndGlobalSection
+EndGlobal
