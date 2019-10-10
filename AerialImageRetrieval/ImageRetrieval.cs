@@ -33,11 +33,18 @@ namespace AerialImageRetrieval
 
         private const int TileSize = 256; // in Bing tile system, one tile image is in size 256 * 256 pixels
 
-        private string cacheFolder => Labeled ? "cache/labeled" : "cache/unlabeled";
+        private string appDataFolder;
+        private string cacheFolder => Path.Combine(appDataFolder, 
+            Labeled ? "cache/labeled" : "cache/unlabeled");
 
         private byte[] nullImg;
 
-        public ImageRetrieval() { }
+        public ImageRetrieval() 
+        {
+            appDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "AerialImageRetrieval");
+        }
 
         /// <summary>
         /// Retrieves aerial imagery with the highest possible zoom level.
