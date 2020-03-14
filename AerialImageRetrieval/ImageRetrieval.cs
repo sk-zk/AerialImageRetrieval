@@ -27,6 +27,11 @@ namespace AerialImageRetrieval
         /// </summary>
         public bool CacheTiles { get; set; } = true;
 
+        /// <summary>
+        /// The output format.
+        /// </summary>
+        public MagickFormat ImageFormat { get; set; } = MagickFormat.Png24;
+
         private const string AerialLabeledUrl = "https://t.ssl.ak.tiles.virtualearth.net/tiles/h{0}.jpeg?g=131";
         private const string AerialUnlabeledUrl = "https://t.ssl.ak.tiles.virtualearth.net/tiles/a{0}.jpeg?g=131";
         private string BaseUrl => Labeled ? AerialLabeledUrl : AerialUnlabeledUrl;
@@ -243,7 +248,7 @@ namespace AerialImageRetrieval
         {
             using (var fs = new FileStream(outputPath, FileMode.Create))
             {
-                result.Write(fs, MagickFormat.Png24);
+                result.Write(fs, ImageFormat);
             }
         }
 
