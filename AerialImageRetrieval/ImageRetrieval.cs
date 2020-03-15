@@ -62,14 +62,35 @@ namespace AerialImageRetrieval
         /// <param name="maxLevel">Caps the highest zoom level the method will request
         /// at the given value.</param>
         /// <returns>Returns whether the method succeeded.</returns>
-        public bool RetrieveMaxResolution(double lat1, double lon1, double lat2, double lon2, 
+        public bool RetrieveMaxResolution(double lat1, double lon1, 
+            double lat2, double lon2, 
             string outputPath, int maxLevel = MaxLevel)
+        {
+            var image = RetrieveMaxResolution(lat1, lon1, lat2, lon2, maxLevel);
+            if (image is null) return false;
+            SaveImage(outputPath, image);
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves aerial imagery with the highest possible zoom level.
+        /// </summary>
+        /// <param name="lat1">Latitude of the top left corner.</param>
+        /// <param name="lon1">Longitude of the top left corner.</param>
+        /// <param name="lat2">Latitude of the bottom right corner.</param>
+        /// <param name="lon2">Longitude of the bottom right corner.</param>
+        /// <param name="maxLevel">Caps the highest zoom level the method will request
+        /// at the given value.</param>
+        /// <returns>Returns the image if the method succeeded, or null if it didn't.</returns>
+        public IMagickImage RetrieveMaxResolution(double lat1, double lon1,
+            double lat2, double lon2,
+            int maxLevel = MaxLevel)
         {
             /* The main aerial retrieval method
 
                It will firstly determine the appropriate level used to retrieve the image.
                All the tile image within the given bounding box at that level should all exist.
-        
+
                Then for the given level, we can download each aerial tile image, and stitch them together.
 
                Lastly, we have to crop the image based on the given bounding box
@@ -122,12 +143,9 @@ namespace AerialImageRetrieval
                 result.Crop(new MagickGeometry(pixelX1 - leftup_cornerX, pixelY1 - leftup_cornerY,
                     pixelX2 - leftup_cornerX, pixelY2 - leftup_cornerY));
                 result.RePage();
-
-                SaveImage(outputPath, result);
-                return true;
+                return result;
             }
-
-            return false;
+            return null;
         }
 
         /// <summary>
