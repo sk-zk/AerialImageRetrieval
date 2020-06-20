@@ -32,11 +32,28 @@ namespace AerialImageRetrieval
         /// </summary>
         public MagickFormat ImageFormat { get; set; } = MagickFormat.Png24;
 
+        private string culture = "en-us";
+        /// <summary>
+        /// The culture code for localized map labels.
+        /// </summary>
+        public string Culture
+        {
+            get => Culture;
+            set
+            {
+                foreach (char c in value)
+                    if (!(char.IsLetter(c) ||  c == '-'))
+                        throw new ArgumentException("Value is not a valid culture code");
+
+                culture = value;
+            }
+        }
+
         private const string AerialLabeledUrl =
-            "https://t.ssl.ak.tiles.virtualearth.net/tiles/h{0}.jpeg?g=517";
+            "https://t.ssl.ak.tiles.virtualearth.net/tiles/h{0}.jpeg?g=517&mkt={1}";
 
         private const string AerialUnlabeledUrl =
-            "https://t.ssl.ak.tiles.virtualearth.net/tiles/a{0}.jpeg?g=517";
+            "https://t.ssl.ak.tiles.virtualearth.net/tiles/a{0}.jpeg?g=517&mkt={1}";
 
         private string BaseUrl => Labeled ? AerialLabeledUrl : AerialUnlabeledUrl;
 
@@ -210,7 +227,7 @@ namespace AerialImageRetrieval
                 using var wc = new WebClient();
                 try
                 {
-                    data = wc.DownloadData(string.Format(BaseUrl, quadKey));
+                    data = wc.DownloadData(string.Format(BaseUrl, quadKey, culture));
                 }
                 catch (WebException wex)
                 {
@@ -253,7 +270,7 @@ namespace AerialImageRetrieval
                 // an invalid quadkey which will download a null jpeg
                 using (var wc = new WebClient())
                 {
-                    nullImg = wc.DownloadData(string.Format(BaseUrl, "11111111111111111111"));
+                    nullImg = wc.DownloadData(string.Format(BaseUrl, "11111111111111111111", culture));
                 }
             }
             return image.SequenceEqual(nullImg);
