@@ -40,11 +40,11 @@ namespace AerialImageRetrieval
 
         private string BaseUrl => Labeled ? AerialLabeledUrl : AerialUnlabeledUrl;
 
-        private const int TileSize = 256; // in Bing tile system, one tile image is in size 256 * 256 pixels
+        private const int TileSize = 256; // side length of a tile in Bing's tile system
 
         private string appDataFolder;
-        private string cacheFolder => Path.Combine(appDataFolder, 
-            Labeled ? "cache/labeled" : "cache/unlabeled");
+        private string CacheFolder =>
+            Path.Combine(appDataFolder, Labeled ? "cache/labeled" : "cache/unlabeled");
 
         private byte[] nullImg;
 
@@ -66,12 +66,12 @@ namespace AerialImageRetrieval
         /// <param name="maxLevel">Caps the highest zoom level the method will request
         /// at the given value.</param>
         /// <returns>Returns whether the method succeeded.</returns>
-        public bool RetrieveMaxResolution(double lat1, double lon1, 
-            double lat2, double lon2, 
+        public bool RetrieveMaxResolution(double lat1, double lon1, double lat2, double lon2, 
             string outputPath, int maxLevel = MaxLevel)
         {
             var image = RetrieveMaxResolution(lat1, lon1, lat2, lon2, maxLevel);
-            if (image is null) return false;
+            if (image is null) 
+                return false;
             SaveImage(outputPath, image);
             return true;
         }
@@ -86,8 +86,7 @@ namespace AerialImageRetrieval
         /// <param name="maxLevel">Caps the highest zoom level the method will request
         /// at the given value.</param>
         /// <returns>Returns the image if the method succeeded, or null if it didn't.</returns>
-        public IMagickImage RetrieveMaxResolution(double lat1, double lon1,
-            double lat2, double lon2,
+        public IMagickImage RetrieveMaxResolution(double lat1, double lon1, double lat2, double lon2,
             int maxLevel = MaxLevel)
         {
             /* The main aerial retrieval method
@@ -100,9 +99,10 @@ namespace AerialImageRetrieval
                Lastly, we have to crop the image based on the given bounding box
             */
 
-            if (maxLevel < 0) throw new ArgumentOutOfRangeException("maxLevel");
+            if (maxLevel < 0)
+                throw new ArgumentOutOfRangeException("maxLevel");
 
-            Directory.CreateDirectory(cacheFolder);
+            Directory.CreateDirectory(CacheFolder);
 
             for (int level = maxLevel; level >= 0; level--)
             {
@@ -119,14 +119,6 @@ namespace AerialImageRetrieval
                     throw new ArgumentException("Cannot find a valid aerial imagery for the given bounding box!");
                 }
 
-                /*
-                if (Math.Abs(pixelX1 - pixelX2) * Math.Abs(pixelY1 - pixelY2) > ImageMaxSize)
-                {
-                    Trace.WriteLine($"Current level {level} results an image exceeding the maximum image size (8192 * 8192), will SKIP");
-                    continue;
-                }
-                */
-
                 TileSystem.PixelXYToTileXY(pixelX1, pixelY1, out var tileX1, out var tileY1);
                 TileSystem.PixelXYToTileXY(pixelX2, pixelY2, out var tileX2, out var tileY2);
 
@@ -134,7 +126,8 @@ namespace AerialImageRetrieval
                 using var collection = new MagickImageCollection();
 
                 var retrieveSuccess = DownloadTiles(tileX1, tileY1, tileX2, tileY2, level, collection);
-                if (!retrieveSuccess) continue;
+                if (!retrieveSuccess)
+                    continue;
 
                 var result = collection.Montage(new MontageSettings()
                 {
@@ -144,8 +137,11 @@ namespace AerialImageRetrieval
 
                 // Crop the image based on the given bounding box
                 TileSystem.TileXYToPixelXY(tileX1, tileY1, out var leftup_cornerX, out var leftup_cornerY);
-                result.Crop(new MagickGeometry(pixelX1 - leftup_cornerX, pixelY1 - leftup_cornerY,
-                    pixelX2 - leftup_cornerX, pixelY2 - leftup_cornerY));
+                int x = (int)(pixelX1 - leftup_cornerX);
+                int y = (int)(pixelY1 - leftup_cornerY);
+                int width = (int)(pixelX2 - leftup_cornerX) - x;
+                int height = (int)(pixelY2 - leftup_cornerY) - y;
+                result.Crop(new MagickGeometry(x, y, width, height));
                 result.RePage();
                 return result;
             }
@@ -172,8 +168,8 @@ namespace AerialImageRetrieval
         /// <param name="level"></param>
         /// <param name="collection"></param>
         /// <returns>Returns whether the download succeeded.</returns>
-        private bool DownloadTiles(int tileXStart, int tileYStart, int tileXEnd, int tileYEnd, int level,
-            MagickImageCollection collection)
+        private bool DownloadTiles(int tileXStart, int tileYStart, int tileXEnd, int tileYEnd,
+            int level, MagickImageCollection collection)
         {
             for (int tileY = tileYStart; tileY < tileYEnd + 1; tileY++)
             {
@@ -204,7 +200,7 @@ namespace AerialImageRetrieval
         {
             byte[] data = null;
 
-            var cachePath = Path.Combine(cacheFolder, quadKey + ".jpg");
+            var cachePath = Path.Combine(CacheFolder, quadKey + ".jpg");
             if (CacheTiles && File.Exists(cachePath))
             {
                 data = File.ReadAllBytes(cachePath);
@@ -239,8 +235,10 @@ namespace AerialImageRetrieval
                 }
             }
 
-            if (data is null || IsNullImage(data)) return null;         
-            return new MagickImage(data);
+            if (data is null || IsNullImage(data))
+                return null;
+            else
+                return new MagickImage(data);
         }
 
         /// <summary>
@@ -252,7 +250,7 @@ namespace AerialImageRetrieval
         {
             if (nullImg is null)
             {
-                // an invalid quadkey which will download a null jpeg from Bing tile system
+                // an invalid quadkey which will download a null jpeg
                 using (var wc = new WebClient())
                 {
                     nullImg = wc.DownloadData(string.Format(BaseUrl, "11111111111111111111"));
@@ -268,10 +266,8 @@ namespace AerialImageRetrieval
         /// <param name="result"></param>
         private void SaveImage(string outputPath, IMagickImage result)
         {
-            using (var fs = new FileStream(outputPath, FileMode.Create))
-            {
-                result.Write(fs, ImageFormat);
-            }
+            using var fs = new FileStream(outputPath, FileMode.Create);
+            result.Write(fs, ImageFormat);
         }
 
     }
