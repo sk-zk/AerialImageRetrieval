@@ -32,8 +32,12 @@ namespace AerialImageRetrieval
         /// </summary>
         public MagickFormat ImageFormat { get; set; } = MagickFormat.Png24;
 
-        private const string AerialLabeledUrl = "https://t.ssl.ak.tiles.virtualearth.net/tiles/h{0}.jpeg?g=131";
-        private const string AerialUnlabeledUrl = "https://t.ssl.ak.tiles.virtualearth.net/tiles/a{0}.jpeg?g=131";
+        private const string AerialLabeledUrl =
+            "https://t.ssl.ak.tiles.virtualearth.net/tiles/h{0}.jpeg?g=517";
+
+        private const string AerialUnlabeledUrl =
+            "https://t.ssl.ak.tiles.virtualearth.net/tiles/a{0}.jpeg?g=517";
+
         private string BaseUrl => Labeled ? AerialLabeledUrl : AerialUnlabeledUrl;
 
         private const int TileSize = 256; // in Bing tile system, one tile image is in size 256 * 256 pixels
